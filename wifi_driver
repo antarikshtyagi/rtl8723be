@@ -1,0 +1,30 @@
+Another solution how to fix realtek rtl8723be wifi problems on Ubuntu
+         
+In this post we try to give another solution how to fix or resolve Wifi problems especially for Realtek RTL8723BE PCIe Wireless Network Adapter on Ubuntu like unstable internet connection (sometimes could works but in another time have Wifi connection drop), behaving strangely drops the WLAN connection constantly.
+Realtek RTL8723BE PCIe Wireless Network Adapter Drivers on Ubuntu PPA
+
+Few months ago we posted Install  Realtek RTL8723BE PCIe Wireless driver On Ubuntu and Linux Mint it works well and still works on my Ubuntu PC. the only one disadvantage from that method is sometimes we have to re-install the drivers after updated system or after updated kernel. but, it has stable connection and there is no more issues regarding internet connection speed.
+Back to the topic another solution how to fix or resolve Realtek RTL8723BE PCIe Wireless problems by Adding hanipouspilot PPA for Realtek drivers from Larry Finger's github and rtl8192eu is packaged from the Realtek site with some compat patches.  PPA Detail.
+
+I sugest to make backup your rtl8723be.conf before adding this PPA, copy your old rtl8723be.conf
+sudo cp /etc/modprobe.d/rtl8723be.conf   /etc/modprobe.d/rtl8723be.bckup.conf
+
+Adding hanipouspilot, install rtlwifi and firmware
+sudo add-apt-repository ppa:hanipouspilot/rtlwifi
+sudo apt-get update
+sudo apt-get install rtlwifi-new-dkms linux-firmware
+
+Check your rtl8723be drivers on antenna cell, it should catch available wifi signal around your device.
+sudo modprobe -r rtl8723be
+sudo modprobe rtl8723be ant_sel=1
+iwlist scan | egrep -i 'ssid|level'
+or
+sudo modprobe -r rtl8723be
+sudo modprobe rtl8723be ant_sel=2
+iwlist scan | egrep -i 'ssid|level'
+
+Then, edit the configuration file for the new driver.
+echo "options rtl8723be fwlps=0 ips=0 ant_sel=1" | sudo tee /etc/modprobe.d/rtl8723be.conf
+or
+echo "options rtl8723be fwlps=0 ips=0 ant_sel=2" | sudo tee /etc/modprobe.d/rtl8723be.conf
+Done, Now your WLAN connection now should works. I found sometimes we need to reboot to make sure your WLAN connection works.
